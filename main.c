@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <unistd.h>
 
 
-    typedef struct {
+    typedef struct { //struct para pasar los parametros a los threads
         int fila;
         int columna;
     } filacolumna;
@@ -15,21 +14,13 @@
 
     //Checkea si una columna es valida
     void *colValida(void* fc) {
-        //Veo si la fila y columna corresponden a una columna
         filacolumna *filcol = (filacolumna*) fc;
-        int fil = filcol->fila;
         int col = filcol->columna;
-        if (fil != 0 || col > 8) {
-            fprintf(stderr, "Fila o columna invalida! fila=%d, columna=%d\n", fil, col);
-            pthread_exit(NULL);
-        }
-
-        //Veo si en la columna hay solo una aparicion del 1-9
         int visto[9] = {0};
         int i;
         for (i = 0; i < 9; i++) {
             int num = sudoku[i][col];
-            if (num < 1 || num > 9 || visto[num - 1] == 1) {
+            if (visto[num - 1] == 1) {
                 pthread_exit(NULL);
             } else {
                 visto[num - 1] = 1;
@@ -42,23 +33,13 @@
 
     //Checkea si una fila es valida
     void *filValida(void* fc) {
-        //Veo si la fila y columna corresponden a una fila
         filacolumna *filcol = (filacolumna*) fc;
         int fil = filcol->fila;
-        int col = filcol->columna;
-        if (col != 0 || fil > 8) {
-            fprintf(stderr, "Fila o columna invalida! fila=%d, columna=%d\n", fil, col);
-            pthread_exit(NULL);
-        }
-
-        //Veo si en la fila hay solo una aparicion del 1-9
         int visto[9] = {0};
         int i;
         for (i = 0; i < 9; i++) {
-            // If the corresponding index for the number is set to 1, and the number is encountered again,
-            // the valid array will not be updated and the thread will exit.
             int num = sudoku[fil][i];
-            if (num < 1 || num > 9 || visto[num - 1] == 1) {
+            if (visto[num - 1] == 1) {
                 pthread_exit(NULL);
             } else {
                 visto[num - 1] = 1;
@@ -71,20 +52,15 @@
 
     //Checkea si una subseccion de 3x3 es valida
     void *subsValida(void* fc) {
-        //Veo si la fila y columna corresponden a una subseccion 3x3
         filacolumna *filcol = (filacolumna*) fc;
         int fil = filcol->fila;
         int col = filcol->columna;
-        if (fil > 6 || fil % 3 != 0 || col > 6 || col % 3 != 0) {
-            fprintf(stderr, "Fila o columna invalida! fila=%d, columna=%d\n", fil, col);
-            pthread_exit(NULL);
-        }
         int visto[9] = {0};
         int i, j;
         for (i = fil; i < fil + 3; i++) {
             for (j = col; j < col + 3; j++) {
                 int num = sudoku[i][j];
-                if (num < 1 || num > 9 || visto[num - 1] == 1) {
+                if (visto[num - 1] == 1) {
                     pthread_exit(NULL);
                 } else {
                     visto[num - 1] = 1;
@@ -95,6 +71,7 @@
         valid[fil + col/3] = 1;
         pthread_exit(NULL);
     }
+
     int main() {
 	pthread_t threads[27];
     FILE *fp;
@@ -105,17 +82,18 @@
         for(j=0;j<18;j++){
             char c;
             c=fgetc(fp);
-            if(c!=EOF){
+            if(j%2 == 0){
                 if(c >= '0' && c <= '9'){
                     int n=atoi(&c);
                     sudoku[i][j/2] = n;
                 }
+
             }
+
         }
     }
 	int threadNum = 0;
-	// Create 9 threads for 9 3x3 subsections, 9 threads for 9 columns and 9 threads for 9 rows.
-	// This will end up with a total of 27 threads.
+	//Creo los 27 threads, 9 para las filas, 9 para las columnas y 9 para las subsecciones
 	for (i = 0; i < 9; i++) {
 		for (j = 0; j < 9; j++) {
 			if (i%3 == 0 && j%3 == 0) {
@@ -140,16 +118,16 @@
 	}
 
 	for (i = 0; i < 27; i++) {
-		pthread_join(threads[i], NULL);			// Wait for all threads to finish
+		pthread_join(threads[i], NULL);	//Espero a que finalizen los threads
 	}
 
-	// If any of the entries in the valid array are 0, then the sudoku solution is invalid
+	// Si cualquier entrada en el arreglo de validos es 0, el sudoku es invalido
 	for (i = 0; i < 27; i++) {
 		if (valid[i] == 0) {
-			printf("Sudoku solution is invalid!\n");
+			printf("El sudoku es invalido!\n");
 			return EXIT_SUCCESS;
 		}
 	}
-	printf("Sudoku solution is valid!\n");
+	printf("El sudoku es valido!\n");
 	return EXIT_SUCCESS;
 }
