@@ -12,8 +12,6 @@
     int sudoku[9][9];
     pthread_t threads[27];
 
-
-
     //Checkea si una columna es valida
     void *colValida(void* fc) {
         filacolumna *filcol = (filacolumna*) fc;
@@ -151,9 +149,9 @@
 	for (i = 0; i < 27; i++) {
 		if (valid[i] == 0) {
 			printf("El sudoku es invalido!\n");
-			return EXIT_SUCCESS;
+			return 0;
 		}
 	}
 	printf("El sudoku es valido!\n");
-	return EXIT_SUCCESS;
+	return 0;
 }
