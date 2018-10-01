@@ -1,3 +1,8 @@
 # ProyectoSO2018
-Para comilar:
-$ gcc main.c -lpthread -o nombrearchivo
+Para compilar:
+
+$ gcc main.c -lpthread -o nombrea_rchivo
+
+Para ejecutar:
+
+./nombre_archivo
