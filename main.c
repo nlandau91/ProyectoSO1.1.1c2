@@ -125,7 +125,7 @@
         FILE *fp;
         fp=fopen("sudoku.txt","r");
         if(fp==NULL){
-			printf("No se pudo abrir el archivo sudoku.txt\n");
+            printf("No se pudo abrir el archivo sudoku.txt\n");
             exit(EXIT_FAILURE);
         }
         int i,j;
