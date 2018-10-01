@@ -4,7 +4,7 @@ Sudoku con threads
 
 Para compilar:
 
-$ gcc main.c -lpthread -o nombrea_rchivo
+$ gcc main.c -lpthread -o nombre_archivo
 
 Para ejecutar:
 
